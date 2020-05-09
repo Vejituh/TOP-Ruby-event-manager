@@ -1,7 +1,7 @@
-lines = File.readlines "../event_attendees.csv"
-lines.each_with_index do |line,index|
-  next if index == 0
-  columns  = line.split(",")
-  names = columns[2]
-    p names
+require "csv"
+event_attendees_content = CSV.open "../event_attendees.csv",headers:true,header_converters: :symbol
+event_attendees_content.each do |row|
+  names = row[:first_name]
+  zipcodes = row[:zipcode]
+  p "#{names} #{zipcodes}"
 end
