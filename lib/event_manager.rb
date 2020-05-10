@@ -8,16 +8,13 @@ end
 
 def clean_phone_numbers(phones)
   phones.gsub!(/[^a-z0-9]/i,'')
-  if phones.length < 10
-     "Invalid phone number"
-  elsif
+  if
     phones.length == 11 && phones[0].to_i == 1
     phones[1,11]
-
+  elsif phones.length < 10 || phones.length > 10
+    "Invalid phone number"
   elsif
     phones.length == 11 && phones[0].to_i != 1
-    "Invalid phone number"
-  elsif phones.length > 10
     "Invalid phone number"
   else
     phones
@@ -57,4 +54,5 @@ event_attendees_content.each do |row|
   legislators = legislators_by_zipcode(zipcodes)
   form_letter = erb_template.result(binding)
   #save_thank_you_letter(id,form_letter)
+  p phones
 end
