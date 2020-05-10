@@ -20,15 +20,22 @@ def legislators_by_zipcode(zip)
   end
 end
 
+def save_thank_you_letter(id,form_letter)
+  Dir.mkdir("output") unless Dir.exists? ("output")
+  filename = "output/thanks_#{id}.html"
+  File.open(filename, 'w') do |file|
+    file.puts form_letter
+  end
+end
+
 event_attendees_content = CSV.open "event_attendees.csv",headers:true,header_converters: :symbol
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
 event_attendees_content.each do |row|
+  id = row[0]
   names = row[:first_name]
   zipcodes = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcodes)
   form_letter = erb_template.result(binding)
-
-  #p "#{names} #{zipcodes} #{legislators}"
-  p form_letter
+  save_thank_you_letter(id,form_letter)
 end
