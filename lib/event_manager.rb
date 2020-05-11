@@ -1,6 +1,9 @@
 require "csv"
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'date'
+
+date_time = Array.new
 
 def clean_zipcode(zipcodes)
   zipcodes.to_s.rjust(5,"0")[0..4]
@@ -43,6 +46,16 @@ def save_thank_you_letter(id,form_letter)
   end
 end
 
+def time_targeting(date_time)
+  common_hours = Array.new
+  date_time.each do |hour|
+    if date_time.count(hour) > 2
+      common_hours.push(hour)
+    end
+  end
+  p "The following hours are prime regestration hours: #{common_hours.uniq!}"
+end
+
 event_attendees_content = CSV.open "event_attendees.csv",headers:true,header_converters: :symbol
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
@@ -50,9 +63,11 @@ event_attendees_content.each do |row|
   id = row[0]
   names = row[:first_name]
   phones = clean_phone_numbers(row[:homephone])
+  reg_date = row[:regdate]
+  date_time.push(DateTime.strptime(reg_date, '%m/%d/%y %H').hour)
   zipcodes = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcodes)
   form_letter = erb_template.result(binding)
   #save_thank_you_letter(id,form_letter)
-  p phones
 end
+  time_targeting(date_time)
