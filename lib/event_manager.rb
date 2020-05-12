@@ -53,7 +53,9 @@ def time_targeting(date_time)
       common_hours.push(hour)
     end
   end
-  p "The following hours are prime regestration hours: #{common_hours.uniq!}"
+  common_hours.uniq.each do |common_hour|
+  p "this is a common hour:  #{common_hour}"
+  end
 end
 
 event_attendees_content = CSV.open "event_attendees.csv",headers:true,header_converters: :symbol
