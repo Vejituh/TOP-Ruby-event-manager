@@ -4,6 +4,7 @@ require 'erb'
 require 'date'
 
 date_time = Array.new
+week_date = Array.new
 
 def clean_zipcode(zipcodes)
   zipcodes.to_s.rjust(5,"0")[0..4]
@@ -58,6 +59,25 @@ def time_targeting(date_time)
   end
 end
 
+def day_of_the_week(week_date)
+  common_days = Array.new
+  week_date.each do |day|
+    if week_date.count(day) > 2
+      common_days.push(day)
+    end
+  end
+  days = {0 => "Sunday",
+    1 => "Monday", 
+    2 => "Tuesday",
+    3 => "Wednesday",
+    4 => "Thursday",
+    5 => "Friday",
+    6 => "Saturday"}
+  common_days.uniq.each do |common_day|
+  p "this is a common day: #{days[common_day]}"
+  end
+end
+
 event_attendees_content = CSV.open "event_attendees.csv",headers:true,header_converters: :symbol
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
@@ -67,9 +87,11 @@ event_attendees_content.each do |row|
   phones = clean_phone_numbers(row[:homephone])
   reg_date = row[:regdate]
   date_time.push(DateTime.strptime(reg_date, '%m/%d/%y %H').hour)
+  week_date.push(DateTime.strptime(reg_date, '%m/%d/%y').wday)
   zipcodes = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcodes)
   form_letter = erb_template.result(binding)
   #save_thank_you_letter(id,form_letter)
 end
-  time_targeting(date_time)
+  #time_targeting(date_time)
+  day_of_the_week(week_date)
